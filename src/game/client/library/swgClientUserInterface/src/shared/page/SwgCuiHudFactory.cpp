@@ -124,13 +124,12 @@ void SwgCuiHudFactory::createHudIfNeeded()
 	}
 	
 	CuiSettings::load();
-	CuiChatHistory::load();
-
-	// Refresh values after a scene change.
-	CuiPreferences::refreshValues();
-	
 	if (needsCreate)
 	{		
+		CuiChatHistory::load();
+
+		// Refresh values after a scene change.
+		CuiPreferences::refreshValues();
 		switch(sceneType)
 		{
 		case Game::ST_ground:
@@ -184,15 +183,6 @@ void SwgCuiHudFactory::createHudIfNeeded()
 	// Enable the IME window.
 	CuiIMEManager::GetCuiIMEManager()->SetIMEIndicator(sceneType == Game::ST_space ? CuiMediatorTypes::WS_IMEIndicatorSpace : CuiMediatorTypes::WS_IMEIndicator);
 	CuiIMEManager::GetCuiIMEManager()->NotifyIMEOpenStatus(true);
-
-	// Force a save over existing data.
-	if (needsCreate) 
-	{
-		CuiSettings::setDirty(true);
-		CuiSettings::save();
-		CuiChatHistory::setDirty(true);
-		CuiChatHistory::save();
-	}
 }
 
 //----------------------------------------------------------------------

@@ -525,9 +525,11 @@ void CuiChatHistory::clear ()
 
 void CuiChatHistory::load()
 {
-	while (s_savingData){
-		Sleep(1);
+	if (s_savingData){
+		REPORT_LOG_PRINT(true, ("CuiChatHistory detected savingData is true\n"));
+		load();
 	}
+
 	s_isNewPlayer = true;
 
 	clear();
@@ -578,7 +580,7 @@ void CuiChatHistory::load()
 					iff.exitForm (Tags::UIST, true);
 					break;
 				}
-				REPORT_LOG_PRINT (true, ("CuiChatHistory loaded inventory state from %s\n", filename.c_str ()));
+				REPORT_LOG_PRINT (true, ("CuiChatHistory loaded chat history from %s\n", filename.c_str ()));
 			}
 		}
 	}
@@ -592,7 +594,8 @@ void CuiChatHistory::save()
 {
 	if (isDirty() || s_resettingForPlayer) 
 	{
-		s_savingData = true;	
+		s_savingData = true;
+		REPORT_LOG_PRINT(true, ("CuiChatHistory toggling s_savingData %d\n", s_savingData));
 		if (s_currentFilename.empty())
 			return;
 		
@@ -612,7 +615,7 @@ void CuiChatHistory::save()
 		else
 		{
 			DEBUG_REPORT_LOG (s_debugSettings, ("CuiChatHistory::%-30s [%03d] [%30s]\n", "save", s_debugCounter++, s_currentFilename.c_str()));
-			REPORT_LOG_PRINT(true, ("CuiChatHistory saved inventory state to %s\n", s_currentFilename.c_str()));
+			REPORT_LOG_PRINT(true, ("CuiChatHistory saved chat history to %s\n", s_currentFilename.c_str()));
 			const size_t lastSlash = s_currentFilename.rfind ('/');
 			IGNORE_RETURN (Os::createDirectories (s_currentFilename.substr (0, lastSlash).c_str ()));
 			Iff iff (8196, true);
@@ -624,6 +627,7 @@ void CuiChatHistory::save()
 
 		setDirty(false);
 		s_savingData = false;
+		REPORT_LOG_PRINT(true, ("CuiChatHistory toggling s_savingData %s\n", s_savingData));
 	}
 }
 
