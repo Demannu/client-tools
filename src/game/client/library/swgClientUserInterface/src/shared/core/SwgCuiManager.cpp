@@ -283,6 +283,7 @@ namespace SwgCuiManagerNamespace
 				CuiManager::raiseToTop ();
 
 				CuiInventoryState::saveInventoryState ();
+				
 
 				CuiMediatorFactory::deactivate (CuiMediatorTypes::ServerDisconnected);
 

@@ -96,6 +96,7 @@ void SwgCuiHudFactory::createHudTemplates()
 
 void SwgCuiHudFactory::releaseHudIfNeeded()
 {
+	CuiChatHistory::save();
 	setHudActive(false);
 }
 
@@ -124,10 +125,10 @@ void SwgCuiHudFactory::createHudIfNeeded()
 	}
 	
 	CuiSettings::load();
+	CuiChatHistory::load();
+
 	if (needsCreate)
 	{		
-		CuiChatHistory::load();
-
 		// Refresh values after a scene change.
 		CuiPreferences::refreshValues();
 		switch(sceneType)
