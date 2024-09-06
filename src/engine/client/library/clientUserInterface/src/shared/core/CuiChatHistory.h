@@ -44,6 +44,7 @@ public:
 
 	static void resetForPlayer ();
 	static bool isResettingForPlayer ();
+	static bool savingData();
 
 	static void setPrefixString(std::string const & prefixString);
 	static bool isNewPlayer();
