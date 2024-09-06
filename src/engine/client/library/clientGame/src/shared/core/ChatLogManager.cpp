@@ -95,6 +95,7 @@ void ChatLogManager::install()
 //-----------------------------------------------------------------------------
 void ChatLogManager::remove()
 {
+	DEBUG_LEVEL_RELEASE("ChatLogManager has been removed");
 	flush();
 	s_installed = false;
 }
@@ -121,10 +122,9 @@ void ChatLogManager::appendLine(Unicode::String const &text)
 	{
 		s_chatText.push_back(text);
 
-		if (s_chatText.size() >= s_maxCachedLineCount)
+		if (s_chatText.size() >= s_maxCachedLineCount) //TODO: This might be one of the contributors for space dumping text
 		{
 			// Enough cached lines, dump them to disk
-
 			flush();
 		}
 	}
@@ -145,7 +145,8 @@ void ChatLogManager::gameStart()
 //-----------------------------------------------------------------------------
 void ChatLogManager::flush()
 {
-	if (!s_chatText.empty())
+	DEBUG_LEVEL_RELEASE("ChatLogManager is flushing");
+	if (!s_chatText.empty()) //TODO: The flush may also be contributing if it's flushing too often or in sequence, it may load the old CHT
 	{
 		std::string fileName(getFileName());
 
@@ -191,14 +192,14 @@ void ChatLogManager::flush()
 
 				fclose(fp);
 				fp = NULL;
-
+				DEBUG_LEVEL_RELEASE(s_chatText);
 				s_chatText.clear();
 			}
 		}
 
 		if (s_chatText.size() > s_autoFlushMaxCachedLineCount)
 		{
-			s_chatText.clear();
+			flushAndFillText();
 		}
 	}
 }
@@ -243,6 +244,23 @@ void ChatLogManager::showEnabledText()
 void ChatLogManager::showDisabledText()
 {
 	CuiChatRoomManager::sendPrelocalizedChat(ClientTextManager::colorText(CuiStringIds::chat_log_disabled.localize(), ClientTextManager::TT_systemMessage));
+}
+
+//-----------------------------------------------------------------------------
+void ChatLogManager::flushAndFillText()
+{
+	ChatText           overflowText = s_chatText;
+	ChatText::const_iterator iterChatText = overflowText.end();
+	if (isEnabled())
+	{
+		flush();
+		for (int i; i < s_maxCachedLineCount; ++i)
+		{
+			Unicode::String printableText(TextIterator(*iterChatText).getPrintableText());
+			s_chatText.push_back(printableText);
+			--iterChatText;
+		}
+	}
 }
 
 // ============================================================================

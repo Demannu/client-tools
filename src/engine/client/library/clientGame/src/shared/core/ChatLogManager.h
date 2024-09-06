@@ -24,6 +24,7 @@ public:
 	static void showEnabledText();
 	static void showDisabledText();
 	static void gameStart();
+	static void flushAndFillText();
 
 private:
 
